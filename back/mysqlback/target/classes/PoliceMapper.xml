@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PolicemenMapper">
+    <select id="checkPassword" resultType="int">
+        select count(*) from policemen where police_number=#{username} and police_key=#{password};
+    </select>
+    <insert id="registerPolice">
+        INSERT INTO policemen (
+        police_number,
+        police_name,
+        id_number,
+        birthday,
+        gender,
+        nation,
+        phone_number,
+        email,
+        status,
+        position
+        ) VALUES (
+        #{police_number},
+        #{police_name},
+        #{id_number},
+        #{birthday},
+        #{gender},
+        #{nation},
+        #{phone_number},
+        #{email},
+        #{status},
+        #{position}
+        );
+    </insert>
+
+    <select id="validatePoliceNumber" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM policemen WHERE police_number = #{value}
+    </select>
+
+    <select id="validateIDNumber" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM policemen WHERE ID_number = #{value}
+    </select>
+</mapper>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CooperationMapper">
+    <select id="searchAByD" resultType="java.util.Map">
+        SELECT
+        p2.name AS actor1,
+        c.time AS count
+        FROM
+        cooperate c
+        INNER JOIN person p1 ON c.first_person_id = p1.person_id
+        INNER JOIN person p2 ON c.second_person_id = p2.person_id
+        WHERE c.type = 'DA'
+        <if test="director != null">
+            AND p1.name LIKE CONCAT('%', '${director}', '%')
+        </if>
+        <if test="count != null">
+            AND c.time >= '${count}'
+        </if>
+        GROUP BY
+        p2.name,
+        c.time
+        ORDER BY
+        c.time DESC
+        LIMIT 10;
+    </select>
+    <select id="searchAByAfirst" resultType="org.group05.police.DTO.CooperationModel">
+        SELECT
+        p2.name AS actor1,
+        c.time AS count
+        FROM
+        cooperate c
+        INNER JOIN person p1 ON c.first_person_id = p1.person_id
+        INNER JOIN person p2 ON c.second_person_id = p2.person_id
+        WHERE c.type = 'AA'
+        <if test="actor != null">
+            AND p1.name LIKE CONCAT('%', '${actor}', '%')
+        </if>
+        <if test="count != null">
+            AND c.time >= '${count}'
+        </if>
+        GROUP BY
+        p2.name,
+        c.time
+        ORDER BY
+        c.time DESC
+        LIMIT 10;
+    </select>
+    <select id="searchAByAsecond" resultType="org.group05.police.DTO.CooperationModel">
+        SELECT
+        p1.name AS actor1,
+        c.time AS count
+        FROM
+        cooperate c
+        INNER JOIN person p1 ON c.first_person_id = p1.person_id
+        INNER JOIN person p2 ON c.second_person_id = p2.person_id
+        WHERE c.type = 'AA'
+        <if test="actor != null">
+            AND p2.name LIKE CONCAT('%', '${actor}', '%')
+        </if>
+        <if test="count != null">
+            AND c.time >= '${count}'
+        </if>
+        GROUP BY
+        p1.name,
+        c.time
+        ORDER BY
+        c.time DESC
+        LIMIT 10;
+    </select>
+    <select id="searchDByA" resultType="java.util.Map">
+        SELECT
+        p1.name AS director1,
+        c.time AS count
+        FROM
+        cooperate c
+        INNER JOIN person p1 ON c.first_person_id = p1.person_id
+        INNER JOIN person p2 ON c.second_person_id = p2.person_id
+        WHERE c.type = 'DA'
+        <if test="actor != null">
+            AND p2.name LIKE CONCAT('%', '${actor}', '%')
+        </if>
+        <if test="count != null">
+            AND c.time >= '${count}'
+        </if>
+        GROUP BY
+        p1.name,
+        c.time
+        ORDER BY
+        c.time DESC
+        LIMIT 10;
+    </select>
+    <select id="searchAA" resultType="java.util.Map">
+        SELECT
+        p1.name AS director1,
+        c.time AS count
+        FROM
+        cooperate c
+        INNER JOIN person p1 ON c.first_person_id = p1.person_id
+        INNER JOIN person p2 ON c.second_person_id = p2.person_id
+        WHERE
+        p2.name = '${actor}'
+        AND c.type = 'DA'
+        AND c.time >= '${count}'
+        GROUP BY
+        p1.name,
+        c.time
+        ORDER BY
+        c.time DESC
+        LIMIT 10;
+    </select>
+    <!-- 查询指定类型电影评论数最多的前 10 个电影 -->
+    <select id="getTopMoviesByType" resultType="java.lang.String">
+        SELECT movie_id
+        FROM Movie
+        WHERE type LIKE CONCAT('%', '${type}', '%')
+        ORDER BY comments DESC
+        LIMIT 20
+    </select>
+    <!-- 查询每个电影的 director-actor 组合和合作次数 -->
+    <select id="getDACombinations" resultType="java.util.Map">
+        SELECT
+        c.first_person_id AS director1,
+        c.second_person_id AS actor1,
+        COUNT(*) AS count,
+        GROUP_CONCAT(c.movie_id) AS movieIds
+        FROM Cooperate c
+        WHERE c.TYPE = 'DA'
+        AND c.movie_id LIKE CONCAT('%', '${movieId}', '%')
+        GROUP BY director1, actor1
+        ORDER BY count DESC
+        LIMIT 20;
+    </select>
+    <!-- 查询每个电影的 actor-actor 组合和合作次数 -->
+    <select id="getAACombinations" resultType="java.util.Map">
+        SELECT
+        c.first_person_id AS actor1,
+        c.second_person_id AS actor2,
+        COUNT(*) AS count,
+        GROUP_CONCAT(c.movie_id) AS movieIds
+        FROM Cooperate c
+        WHERE c.TYPE = 'AA'
+        AND c.movie_id LIKE CONCAT('%', '${movieId}', '%')
+        GROUP BY actor1, actor2
+        ORDER BY count DESC
+        LIMIT 20;
+    </select>
+    <select id="getMovieComment" resultType="java.lang.String">
+        SELECT comments
+        FROM Movie
+        WHERE type LIKE CONCAT('%', '${movieId1}', '%')
+        ORDER BY comments DESC
+        LIMIT 20
+    </select>
+    <select id="getMovieComments" resultType="java.lang.String">
+        SELECT comments
+        FROM Movie
+        WHERE movie_id = '${movieId1}'
+    </select>
+    <select id="getPersonName" resultType="java.lang.String">
+        SELECT name
+        FROM Person
+        WHERE person_id = '${personID}'
+    </select>
+
+</mapper>

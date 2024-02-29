@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProductMapper">
+    <select id="getMovieID" resultType="java.util.Map">
+        SELECT movie_id AS movie_id,
+        title AS title
+        FROM MOVIE
+        WHERE title LIKE CONCAT('%', '${movieTitle}', '%')
+    </select>
+    <select id="searchProductByTitle" resultType="org.group05.police.DTO.ProductModel">
+        SELECT
+        ASIN AS asin,
+        format AS myformat,
+        cost AS cost,
+        grade AS score
+        FROM
+        PRODUCT
+        WHERE movie_id = '${movieID}'
+    </select>
+</mapper>
